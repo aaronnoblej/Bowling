@@ -67,9 +67,9 @@ namespace Bowling
         private int GetShot(Frame frame, int index)
         {
             // if there is not a shot at this index, go to the next frame
-            while(index >= frame.Shots.Length)
+            while(index >= frame.Shots.Count)
             {
-                index = frame.Shots.Length - index;
+                index = frame.Shots.Count - index;
                 frame = GetNextFrame(frame);
                 if(frame == null)
                 {
@@ -90,6 +90,83 @@ namespace Bowling
         {
             var next = Frames.Find(current).Next;
             return next?.Value;
+        }
+
+        public void PrintScoreSheet()
+        {
+            Console.WriteLine("____________________________________________________________________________________");
+            foreach (Frame f in Frames)
+            {
+                if(f.Type == Frame.FrameType.Open)
+                {
+                    Console.Write($" {f.Shots[0]} | {f.Shots[1]} |");
+                }
+                else if (f.Type == Frame.FrameType.Strike)
+                {
+                    Console.Write($"   | X |");
+                }
+                else if (f.Type == Frame.FrameType.Spare)
+                {
+                    Console.Write($" {f.Shots[0]} | / |");
+                }
+                else
+                {
+                    string[] tenthBoxes = { "", "", "" };
+                    for (int i = 0; i < f.Shots.Count; i++)
+                    {
+                        if (f.Shots[i] == 10)
+                        {
+                            if(i == 0 || (i > 0 && f.Shots[i-1] == 10))
+                            {
+                                tenthBoxes[i] = "X";
+                            }
+                            else
+                            {
+                                tenthBoxes[i] = "/";
+                            }
+                        }
+                        else if((i > 0 && f.Shots[i] + f.Shots[i - 1] == 10) && f.Shots[i-1] != 10)
+                        {
+                            tenthBoxes[i] = "/";
+                        }
+                        else
+                        {
+                            tenthBoxes[i] = f.Shots[i].ToString();
+                        }
+                    }
+                    Console.Write($" {tenthBoxes[0]} | {tenthBoxes[1]} | {(f.Shots.Count == 3 ? tenthBoxes[2] : " ")} |");
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine("   |___|   |___|   |___|   |___|   |___|   |___|   |___|   |___|   |___|   |___|___|");
+
+            var cumulative = 0;
+            foreach(Frame f in Frames)
+            {
+                var prev = Frames.Find(f).Previous;
+                cumulative = prev == null ? f.Score : f.Score + cumulative;
+
+                int boxLength = f.Type == Frame.FrameType.Tenth ? 12 : 8;
+                Console.Write(FormatCumulativeScore(cumulative, boxLength));
+            }
+            Console.WriteLine();
+            Console.WriteLine("_______|_______|_______|_______|_______|_______|_______|_______|_______|___________|");
+        }
+
+        /// <summary>
+        /// Used for formatting text in the command prompt.
+        /// </summary>
+        /// <param name="score">The score to be printed.</param>
+        /// <param name="boxLength">The length of the ASCII art box.</param>
+        /// <returns></returns>
+        private static string FormatCumulativeScore(int score, int boxLength)
+        {
+            string result = $"  {score}";
+            while(result.Length < boxLength-1)
+            {
+                result += " ";
+            }
+            return result + "|";
         }
 
     }

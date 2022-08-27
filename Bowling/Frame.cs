@@ -17,76 +17,27 @@ namespace Bowling
         }
 
         // PROPERTIES
-        public int[] Shots { get; set; }
+        public List<int> Shots { get; set; }
         public FrameType Type { get; private set; }
         public int Score { get; set; } = 0;
 
         // CONSTRUCTORS
-        public Frame(params int[] shots)
+        public Frame(List<int> shots, bool tenth)
         {
             this.Shots = shots;
-        }
-
-        // METHODS
-        /// <summary>
-        /// Validates the shots for the frame according to the following:
-        /// All shots should be between 0 and 10 pins.
-        /// All normal frames should have two shots unless a strike (in which case the only shot should be 10 pins).
-        /// The tenth frame should only have a third shot if a spare or strike takes place before it.
-        /// </summary>
-        /// <returns>True if all above conditions are met, otherwise false.</returns>
-        public bool ValidateFrame(bool tenthFrame = false)
-        {
-            if(Shots.Any(n => n < 0))
-            {
-                return false;
-            }
-
-            var valid = false;
-            // Normal frame validation
-            if(!tenthFrame)
-            {
-                if(Shots.Length == 1)
-                {
-                    valid = KnockedPins() == 10;
-                }
-                else if(Shots.Length > 0 && Shots.Length <= 2)
-                {
-                    valid = KnockedPins() <= 10;
-                }
-            }
-            // Tenth frame validation
-            else
-            {
-                if (Shots.Length == 3)
-                {
-                    // There can only be three shots in the last frame if there is a strike or spare before the final shot
-                    valid = Shots[0] + Shots[1] >= 10 && Shots[2] <= 10;
-                }
-                else if(Shots.Length == 2)
-                {
-                    valid = KnockedPins() < 10;
-                }
-            }
-
-            // Once validated, the type can be set
-            if(valid)
-            {
-                SetType();
-            }
-            return valid;
+            SetType(tenth);
         }
 
         /// <summary>
         /// Finds and sets the type of frame (strike, spare, open, or tenth frame) based on the shots.
         /// </summary>
-        private void SetType()
+        private void SetType(bool tenth = false)
         {
-            if (Shots.Length == 3)
+            if (Shots.Count == 3 || tenth)
             {
                 this.Type = FrameType.Tenth;
             }
-            else if (Shots[0] == 10 && Shots.Length == 1)
+            else if (Shots[0] == 10 && Shots.Count == 1)
             {
                 this.Type = FrameType.Strike;
             }
