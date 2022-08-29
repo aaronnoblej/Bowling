@@ -11,7 +11,6 @@ namespace Bowling
         {
             Console.WriteLine("----------------------------------------------");
             Console.WriteLine("-----------BOWLING SCORE CALCULATOR-----------");
-
             Console.WriteLine("----------------------------------------------------------");
             Console.WriteLine("Enter the number of pins knocked down for each throw.");
             Console.WriteLine("- Strikes can optionally be input as \"X\" or \"x\"");
