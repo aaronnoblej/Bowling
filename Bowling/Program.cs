@@ -5,8 +5,6 @@ namespace Bowling
 {
     class Program
     {
-        // TO DO:
-        // Remove any zeroes that proceed a strike
         static void Main(string[] args)
         {
             Console.WriteLine("----------------------------------------------");
