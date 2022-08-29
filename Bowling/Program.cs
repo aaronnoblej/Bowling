@@ -11,7 +11,6 @@ namespace Bowling
         {
             Console.WriteLine("----------------------------------------------");
             Console.WriteLine("-----------BOWLING SCORE CALCULATOR-----------");
-            Console.WriteLine("----------------------------------------------\n");
 
             Console.WriteLine("----------------------------------------------------------");
             Console.WriteLine("Enter the number of pins knocked down for each throw.");
@@ -21,10 +20,11 @@ namespace Bowling
 
             var game = new Game();
             var frameCount = 10;
+
             for (int i = 1; i <= frameCount; i++)
             {
                 var rollNum = 1;
-                var tenth = i == frameCount;
+                var tenth = i == frameCount; // last frame is set as the tenth frame
                 var currentRolls = new List<int>();
                 var rollAgain = true;
                 var previousRoll = 0;
@@ -45,16 +45,18 @@ namespace Bowling
                         Console.WriteLine("Invalid input. Please try again.");
                     }
                 }
+                // Create a new frame when all rolls are entered and validated
                 Frame frame = new Frame(currentRolls, tenth);
                 game.Frames.AddLast(frame);
                 Console.WriteLine("------------------------");
             }
 
+            // Calculate and display total score after all rolls/frames are entered
             game.CalculateScore();
             Console.WriteLine($"Total score: {game.Total}");
-            game.PrintScoreSheet();
 
-            Console.ReadLine();
+            game.PrintScoreSheet();
+            Console.ReadLine(); // only to keep console open until user presses enter
         }
 
         /// <summary>
@@ -90,17 +92,18 @@ namespace Bowling
             catch(Exception)
             {
                 parsedInput = 0;
-                rollAgain = true;
+                rollAgain = true; // need to set to true so that we do not continue to the next frame
                 return false;
             }
 
             // Validate input
             var valid = false;
-            // Normal frame
-            if(!tenth)
+            
+            if(!tenth) // Normal frame
             {
                 if (parsedInput >= 0 && parsedInput <= 10 - previousRoll)
                 {
+                    // do not roll again if a strike occurred or it is the second roll of the frame
                     if (parsedInput == 10 || rollNumber == 2)
                     {
                         rollAgain = false;
@@ -108,11 +111,11 @@ namespace Bowling
                     valid = true;
                 }
             }
-            // Tenth frame
-            else
+            else // Tenth frame
             {
                 if(parsedInput >= 0 && parsedInput <= 10)
                 {
+                    // do not roll again if no spare/strike in first two frames or the third roll of the tenth frame
                     if ((rollNumber == 2 && previousRoll + parsedInput < 10) || rollNumber == 3)
                     {
                         rollAgain = false;
